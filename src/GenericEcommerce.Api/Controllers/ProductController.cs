@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using GenericEcommerce.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GenericEcommerce.Api.Controllers;
@@ -14,10 +16,49 @@ public class ProductController : ControllerBase
         _productApplicationService = productApplicationService;
     }
     
-    [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    [HttpGet("/AllowAnonymous")]
+    [AllowAnonymous]
+    public async Task<IActionResult> TestingAnonymousAccess()
     {
-        var productResponseList = await _productApplicationService.GetAllProductsAsync();
+        return Ok();
+    }
+
+    [HttpGet("/Admin")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> TestingAdminAccess()
+    {
+        return Ok();
+    }
+
+    [HttpGet("/Regular")]
+    [Authorize(Roles = "regular")]
+    public async Task<IActionResult> TestingRegularAccess()
+    {
+        return Ok();
+    }
+
+    [HttpGet("/AdminAndRegular")]
+    [Authorize(Roles = "admin, regular")]
+    public async Task<IActionResult> TestingAdminAndRegularAccess()
+    {
+        return Ok();
+    }
+
+    [HttpGet("/AdminAndRegularWithMininumAge")]
+    [Authorize(Roles = "admin, regular", Policy ="IdadeMinima")]
+    public async Task<IActionResult> TestingAdminAndRegularWithMininumAgeAccess()
+    {
+        return Ok();
+    }
+
+
+    [HttpGet]
+    [Authorize(Roles = "admin, regular")]
+    public async Task<IActionResult> GetAllAsync([FromQuery] int pageNumber,[FromQuery] int pageSize)
+    {
+        var userIdClaim = User.FindFirst("id");
+        
+        var productResponseList = await _productApplicationService.GetAllProductsAsync(pageNumber, pageSize);
 
         if (!productResponseList.Any()) return NoContent();
 

@@ -12,8 +12,8 @@ public class ProductService : IProductService
         _repository = repository;
     }
 
-    public async Task<List<Product>> GetAllProductsAsync()
+    public async Task<List<Product>> GetAllProductsAsync(int pageNumber, int pageSize)
     {
-        return await _repository.GetAllProductsAsync();
+        return await _repository.GetAllAsync(pageNumber, pageSize);
     }
 }

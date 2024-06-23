@@ -14,8 +14,45 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<List<Product>> GetAllProductsAsync()
+    public async Task<List<Product>> GetAllAsync(int pageNumber, int pageSize)
     {
-        return await _context.Products.ToListAsync();
+        if (pageNumber < 1)
+        {
+            pageNumber = 1;
+        }
+        if (pageSize < 1)
+        {
+            pageSize = 10;
+        }
+
+        return await _context.Products
+        .Skip((pageNumber - 1) * pageSize) // Pula os registros das páginas anteriores
+        .Take(pageSize) // Toma a quantidade de registros especificada
+        .ToListAsync();
+    }
+    
+    public async Task<Product> GetById(int id)
+    {
+        return await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async void CreatetAsync(Product product)
+    {
+        await _context.Products.AddAsync(product);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Product> UpdateAsync(Product product)
+    {
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync();
+
+        return product;
+    }
+
+    public async void DeleteAsybc(Product product)
+    {
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
     }
 }

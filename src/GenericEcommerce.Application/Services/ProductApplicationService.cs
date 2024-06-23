@@ -15,9 +15,9 @@ public class ProductApplicationService : IProductApplicationService
         _productService = productService;
     }
 
-    public async Task<List<ProductResponse>> GetAllProductsAsync()
+    public async Task<List<ProductResponse>> GetAllProductsAsync(int pageNumber, int pageSize)
     {
-        var result = await _productService.GetAllProductsAsync();
+        var result = await _productService.GetAllProductsAsync(pageNumber, pageSize);
         return  _mapper.Map<List<ProductResponse>>(result);
     }
 }
